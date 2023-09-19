@@ -73,6 +73,7 @@ parser.add_argument('-s1', nargs=1, default=nodata)
 parser.add_argument('-s2', nargs=1, default=nodata)
 parser.add_argument('-s3', nargs=1, default=nodata)
 parser.add_argument('-s4', nargs=1, default=nodata)
+parser.add_argument('-bulk_sal', nargs=1, default=nodata)
 parser.add_argument('--marksnowiceinterface', action="store_true", default=False)
 args = parser.parse_args()
 
@@ -101,6 +102,9 @@ if args.s3 is not None:
 if args.s4 is not None:
 	s4 = int(args.s4[0])
 
+if args.bulk_sal is not None:
+	bulk_sal = int(args.bulk_sal[0])
+
 if args.marksnowiceinterface is False:
 	mark = False
 else:
@@ -121,7 +125,6 @@ mass = 0
 n = 0
 for i in range(s4,s3,-1):
 	temp = temperature(i, t_bot, t_top, (s4 - s1))
-	bulk_sal = 2.0
 	brine_sal = ((temp - 273.15) / -0.054)
 	theta_water = bulk_sal / brine_sal
 	if theta_water > 0.1:
@@ -144,17 +147,6 @@ ntot = 0
 for i in range(s4,s3,-1):
 	# Ice under water
 	temp = temperature(i, t_bot, t_top, (s4 - s1))
-	#When you want to apply a bulk salinity profile
-	#if s4 - s3 == 1:
-	#	bulk_sal = 1.5
-	#else:
-	#	bulk_sal = 3.0 - (s4 - i) * ((3.0 - 1.5) / (s4 - s3 - 1))
-
-	# -- or --
-
-	#When you want to apply a constant bulk salinity
-	bulk_sal=1.75
-
 
 	#Calculate other variables given the bulk_sal
 	brine_sal = ((temp - 273.15) / -0.054)
