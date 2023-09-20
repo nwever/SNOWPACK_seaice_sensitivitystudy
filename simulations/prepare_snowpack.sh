@@ -71,3 +71,13 @@ do
 	setup_model
 done
 ohf=${dflt_ohf}
+
+# Test snow thickness
+dflt_snow_thickness=${snow_thickness}
+for val in $(seq 0 10 100)
+do
+	snow_thickness=${val}
+	experiment=SND_${val}
+	setup_model
+done
+snow_thickness=${dflt_snow_thickness}
