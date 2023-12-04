@@ -1,3 +1,24 @@
+writeSMETheader() {
+	echo "SMET 1.1 ASCII" > ${smetfile}
+	echo "[HEADER]" >> ${smetfile}
+	echo "station_id    = ${stnname}" >> ${smetfile}
+	echo "station_name  = ${stnid}" >> ${smetfile}
+	echo "latitude = 85.618" >> ${smetfile}
+	echo "longitude = 125.832" >> ${smetfile}
+	echo "COORDSYS = UPS" >> ${smetfile}
+	echo "COORPARAM = N" >> ${smetfile}
+	echo "altitude      = 0" >> ${smetfile}
+	echo "nodata        = -999" >> ${smetfile}
+	echo "tz            = 0" >> ${smetfile}
+	echo "fields        = timestamp TA RH TSS VW ILWR ISWR " >> ${smetfile}
+	echo "[DATA]" >> ${smetfile}
+}
+
+writeSMETdata() {
+	cat ${datafile} | sed 's/--/-999/g' | awk '(NR>1) {if($5!=-999 && $6!=-999) {vw=sqrt($5*$5+$6*$6)} else {vw=-999}; print $1, $2, $3, $4, vw, $7, $8}' >> ${smetfile}
+}
+
+
 #
 # Download data if not yet present
 #
@@ -40,3 +61,16 @@ if [ ! -e ./data/metcity/ ]; then
 	python3 convert_data.py data/metcity/ > data/metcity.txt
 fi
 
+
+#
+# Create *smet files
+#
+mkdir -p ./smet/
+for stnname in asfs30 asfs40 asfs50 metcity
+do
+	stnid=${stnname}
+	smetfile="./smet/${stnname}.smet"
+	datafile="./data/${stnname}.txt"
+	writeSMETheader
+	writeSMETdata
+done
