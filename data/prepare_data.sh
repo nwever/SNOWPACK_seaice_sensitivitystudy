@@ -1,3 +1,6 @@
+#
+# Download data if not yet present
+#
 if [ ! -e "asfs30.zip" ]; then
 	# Get mosmet.asfs30.level3.4, doi: 10.18739/A2FF3M18K
 	wget -c -O asfs30.zip https://arcticdata.io/metacat/d1/mn/v2/packages/application%2Fbagit-1.0/resource_map_doi%3A10.18739%2FA2FF3M18K
@@ -14,8 +17,26 @@ if [ ! -e "metcity.zip" ]; then
 	# Get Met City, doi: 10.18739/A2PV6B83F
 	wget -c -O metcity.zip https://arcticdata.io/metacat/d1/mn/v2/packages/application%2Fbagit-1.0/resource_map_doi%3A10.18739%2FA2PV6B83F
 fi
+
+
+#
+# Unzip and unpack data if not yet done
+#
 mkdir -p ./data/
-unzip -j -d ./data/asfs30/ asfs30.zip *10min*nc
-unzip -j -d ./data/asfs40/ asfs40.zip *10min*nc
-unzip -j -d ./data/asfs50/ asfs50.zip *10min*nc
-unzip -j -d ./data/metcity/ metcity.zip *10min*nc
+if [ ! -e ./data/asfs30/ ]; then
+	unzip -j -d ./data/asfs30/ asfs30.zip *10min*nc
+	python3 convert_data.py data/asfs30/ > data/asfs30.txt
+fi
+if [ ! -e ./data/asfs40/ ]; then
+	unzip -j -d ./data/asfs40/ asfs40.zip *10min*nc
+	python3 convert_data.py data/asfs40/ > data/asfs40.txt
+fi
+if [ ! -e ./data/asfs50/ ]; then
+	unzip -j -d ./data/asfs50/ asfs50.zip *10min*nc
+	python3 convert_data.py data/asfs50/ > data/asfs50.txt
+fi
+if [ ! -e ./data/metcity/ ]; then
+	unzip -j -d ./data/metcity/ metcity.zip *10min*nc
+	python3 convert_data.py data/metcity/ > data/metcity.txt
+fi
+
