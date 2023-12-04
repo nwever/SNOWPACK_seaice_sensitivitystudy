@@ -21,7 +21,7 @@ def read_files(directory):
                         rh = list(ds.variables['rh'][:]/100.)
                 else:
                         rh = list(ds.variables['rh_2m'][:]/100.)
-                tss = list(ds.variables['skin_temp_surface'][:])
+                tss = list(ds.variables['skin_temp_surface'][:]+273.15)
                 if 'wspd_u_mean' in ds.variables:
                         u = list(ds.variables['wspd_u_mean'][:])
                 else:
