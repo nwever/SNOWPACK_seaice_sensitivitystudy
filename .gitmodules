@@ -1,0 +1,3 @@
+[submodule "simulations/snowpack"]
+	path = simulations/snowpack
+	url = https://gitlabext.wsl.ch/snow-models/snowpack.git
