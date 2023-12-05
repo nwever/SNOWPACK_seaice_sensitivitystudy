@@ -13,7 +13,7 @@ setup_model () {
 	echo "IMPORT_BEFORE	=	./io_base.ini" > ${inifile}
 	echo "" >> ${inifile}
 	echo "[INPUT]" >> ${inifile}
-	echo "STATION1		=	seaice_CO1.smet" >> ${inifile}
+	echo "STATION1		=	metcity.smet" >> ${inifile}
 	echo "SNOWFILE1		=	C0_${experiment}.sno" >> ${inifile}
 	echo "" >> ${inifile}
 	echo "[OUTPUT]" >> ${inifile}
@@ -51,6 +51,8 @@ setup_model
 > to_exec.lst
 mkdir -p log
 
+# Copy meteo timeseries
+cp -pi ../data/smet_combi/metcity.smet ./smet/
 
 # Test bulk salinity
 dflt_bulk_salinity=${bulk_salinity}
