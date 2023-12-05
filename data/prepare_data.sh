@@ -3,10 +3,10 @@ writeSMETheader() {
 	echo "[HEADER]" >> ${smetfile}
 	echo "station_id    = ${stnname}" >> ${smetfile}
 	echo "station_name  = ${stnid}" >> ${smetfile}
-	echo "latitude = 85.618" >> ${smetfile}
-	echo "longitude = 125.832" >> ${smetfile}
-	echo "COORDSYS = UPS" >> ${smetfile}
-	echo "COORPARAM = N" >> ${smetfile}
+	echo "latitude      = 85.618" >> ${smetfile}
+	echo "longitude     = 125.832" >> ${smetfile}
+	echo "COORDSYS      = UPS" >> ${smetfile}
+	echo "COORPARAM     = N" >> ${smetfile}
 	echo "altitude      = 0" >> ${smetfile}
 	echo "nodata        = -999" >> ${smetfile}
 	echo "tz            = 0" >> ${smetfile}
@@ -74,3 +74,14 @@ do
 	writeSMETheader
 	writeSMETdata
 done
+
+
+#
+# Combine meteo data in one smet file
+#
+mkdir -p ./smet_combi/
+if [ -z $(which meteoio_timeseries) ]; then
+	echo "ERROR: meteoio_timeseries not found. Make sure to set \$PATH correctly, such that it includes meteoio/bin!"
+else
+	meteoio_timeseries -s 10 -c io.ini -b 2019-10-06T00:00:00 -e 2020-09-20T00:00:00
+fi
