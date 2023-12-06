@@ -10,7 +10,7 @@ writeSMETheader() {
 	echo "altitude      = 0" >> ${smetfile}
 	echo "nodata        = -999" >> ${smetfile}
 	echo "tz            = 0" >> ${smetfile}
-	echo "fields        = timestamp TA RH TSS VW ILWR ISWR " >> ${smetfile}
+	echo "fields        = ${fields}" >> ${smetfile}
 	echo "[DATA]" >> ${smetfile}
 }
 
@@ -38,6 +38,14 @@ if [ ! -e "metcity.zip" ]; then
 	# Get Met City, doi: 10.18739/A2PV6B83F
 	wget -c -O metcity.zip https://arcticdata.io/metacat/d1/mn/v2/packages/application%2Fbagit-1.0/resource_map_doi%3A10.18739%2FA2PV6B83F
 fi
+if [ ! -e "2019S96.tab" ]; then
+	# Get buoy 2019S96: https://doi.org/10.1594/PANGAEA.925326
+	wget -c -O 2019S96.tab https://doi.pangaea.de/10.1594/PANGAEA.925326?format=textfile&charset=UTF-8
+fi
+if [ ! -e "2019T62.zip" ]; then
+	# Get buoy 2019T62: https://doi.org/10.1594/PANGAEA.940231
+	wget -c -O 2019T62.zip https://doi.pangaea.de/10.1594/PANGAEA.940231?format=zip&charset=UTF-8
+fi
 
 
 #
@@ -63,9 +71,29 @@ fi
 
 
 #
+# Process pluvio data
+#
+# Citation: Atmospheric Radiation Measurement (ARM) user facility. 2019. Weighing Bucket Precipitation Gauge (WBPLUVIO2). 2019-10-17 to 2019-12-11, ARM Mobile Facility (MOS) Collocated Instruments on ice (S3).  Compiled by D. Wang, M. Jane, E. Cromwell, M. Sturm, K. Irving, J. Delamere and M. Mockaitis. ARM Data Center. Data set accessed 2023-12-06 at http://dx.doi.org/10.5439/1338194.
+# @misc{wang_jane_cromwell_sturm_irving_delamere_mockaitis,
+#       title={Weighing Bucket Precipitation Gauge (WBPLUVIO2)},
+#       DOI={10.5439/1338194},
+#       journal={Atmospheric Radiation Measurement (ARM) user facility},
+#       author={Wang, Die and Jane, Mary and Cromwell, Erol and Sturm, Matthew and Irving, Kenneth and Delamere, Jennifer and Mockaitis, Matthew}
+# }
+fields="timestamp PSUM"
+stnname="WBPLUVIO2"
+stnid=${stnname}
+smetfile="./smet/${stnname}.smet"
+writeSMETheader
+awk -F, '(NR>1) {print substr($1,1,10) "T" substr($1,12,8), $6}' ./source/WBPLUVIO2/ascii-csv/moswbpluvio2S3.a1.20191017.000000..20200918.000000.custom.csv >> ${smetfile}
+
+
+#
+#
 # Create *smet files
 #
 mkdir -p ./smet/
+fields="timestamp TA RH TSS VW ILWR ISWR"
 for stnname in asfs30 asfs40 asfs50 metcity
 do
 	stnid=${stnname}
