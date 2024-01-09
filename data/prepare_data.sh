@@ -135,11 +135,17 @@ fi
 #
 
 # First, the snow depth buoy: https://doi.pangaea.de/10.1594/PANGAEA.925326
-wget -c -O 2019S96.tab "https://doi.pangaea.de/10.1594/PANGAEA.925326?format=textfile&charset=UTF-8"
+if [ ! -e 2019S96.tab ]; then
+	wget -c -O 2019S96.tab "https://doi.pangaea.de/10.1594/PANGAEA.925326?format=textfile&charset=UTF-8"
+fi
 
 # Then the IMB
 # 1: manually determined interfaces: https://doi.pangaea.de/10.1594/PANGAEA.938228
-wget -c -O 2019T62_snow_depth_ice_thickness.tab "https://doi.pangaea.de/10.1594/PANGAEA.938228?format=textfile&charset=UTF-8"
+if [ ! -e 2019T62_snow_depth_ice_thickness.tab ]; then
+	wget -c -O 2019T62_snow_depth_ice_thickness.tab "https://doi.pangaea.de/10.1594/PANGAEA.938228?format=textfile&charset=UTF-8"
+fi
 
 # 2: full temperature data: https://doi.pangaea.de/10.1594/PANGAEA.940231
-wget -c -O 2019T62.zip "https://doi.pangaea.de/10.1594/PANGAEA.940231?format=zip&charset=UTF-8"
+if [ ! -e 2019T62.zip ]; then
+	wget -c -O 2019T62.zip "https://doi.pangaea.de/10.1594/PANGAEA.940231?format=zip&charset=UTF-8"
+fi
