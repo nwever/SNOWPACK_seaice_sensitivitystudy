@@ -90,6 +90,21 @@ awk -F, '(NR>1) {print substr($1,1,10) "T" substr($1,12,8), $6}' ./source/WBPLUV
 
 #
 #
+#
+# Citation: Hardin, J., Hunzinger, A., Schuman, E., Matthews, A., Bharadwaj, N., Varble, A., Johnson, K., Giangrande, S., Feng, Y.-C., Lindenmaier, I., Rocque, M., Deng, M., Wendler, T., & Castro, V. Ka ARM Zenith Radar (KAZRCFRGEQC). Atmospheric Radiation Measurement (ARM) User Facility. https://doi.org/10.5439/1615726
+# @misc{hardin_hunzinger_schuman_matthews_bharadwaj_varble_johnson_giangrande_feng_lindenmaier,
+#       title={Ka ARM Zenith Radar (KAZRCFRGEQC)},
+#       DOI={10.5439/1615726},
+#       journal={Atmospheric Radiation Measurement (ARM) user facility},
+#       author={Hardin, Joseph and Hunzinger, Alexis and Schuman, Eddie and Matthews, Alyssa and Bharadwaj, Nitin and Varble, Adam and Johnson, Karen and Giangrande, Scott and Feng, Ya-Chien and Lindenmaier, Iosif and et al.}
+# }
+#
+#
+# NOT IMPLEMENTED YET
+
+
+#
+#
 # Create *smet files
 #
 mkdir -p ./smet/
@@ -113,3 +128,18 @@ if [ -z $(which meteoio_timeseries) ]; then
 else
 	meteoio_timeseries -s 10 -c io.ini -b 2019-10-06T00:00:00 -e 2020-09-20T00:00:00
 fi
+
+
+#
+# Get Buoy data
+#
+
+# First, the snow depth buoy: https://doi.pangaea.de/10.1594/PANGAEA.925326
+wget -c -O 2019S96.tab "https://doi.pangaea.de/10.1594/PANGAEA.925326?format=textfile&charset=UTF-8"
+
+# Then the IMB
+# 1: manually determined interfaces: https://doi.pangaea.de/10.1594/PANGAEA.938228
+wget -c -O 2019T62_snow_depth_ice_thickness.tab "https://doi.pangaea.de/10.1594/PANGAEA.938228?format=textfile&charset=UTF-8"
+
+# 2: full temperature data: https://doi.pangaea.de/10.1594/PANGAEA.940231
+wget -c -O 2019T62.zip "https://doi.pangaea.de/10.1594/PANGAEA.940231?format=zip&charset=UTF-8"
