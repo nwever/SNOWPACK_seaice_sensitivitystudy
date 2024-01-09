@@ -149,3 +149,73 @@ fi
 if [ ! -e 2019T62.zip ]; then
 	wget -c -O 2019T62.zip "https://doi.pangaea.de/10.1594/PANGAEA.940231?format=zip&charset=UTF-8"
 fi
+
+# Convert full temperature data:
+lts="9999-99-99T99:99"
+awk -v cutofftime=${lts} '
+{
+	if(($1 ~ /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}/) && ($1 <= cutofftime)) {
+		n++
+		for (i=1; i<=NF; i++)  {
+			a[n,i] = $i
+		}
+	}
+}
+NF>p { p = NF }
+END {
+	for(j=1; j<=p; j++) {
+		if(!((1,j) in a)) {
+			a[1,j]=-9999
+		}
+		str=a[1,j]
+		for(i=2; i<=n; i++){
+			if(!((i,j) in a)) {
+				a[i,j]=-9999
+			}
+		str=str" "a[i,j];
+		}
+		print str
+	}
+}' <(unzip -p 2019T62.zip datasets/2019T62_temp.tab) > 2019T62_temp.tab
+
+# Mask the temperature data with the manually determined interfaces. The depths for the sensors are 96 to -382 cm, referring to the initial interface between snow and ice.
+top=96
+bottom=382
+spacing=2
+awk -v top=${top} -v bot=${bottom} -v sp=${spacing} '
+BEGIN {
+	n=1
+	m=0
+} {
+	if(NF==5) {
+		d[n]=$1
+		icethickness[$1]=$4*100.	# Convert m to cm
+		snowthickness[$1]=$5*100.	# Convert m to cm
+		n++
+	} else {
+		if(m==0) {
+			print
+			for(i=1; i<=NF; i++) {
+				dd[i]=$i
+			}
+		}
+		m++
+		for(i=1; i<=NF; i++) {
+			k=1
+			for(j=1; j<=n; j++) {
+				if(substr(dd[i],1,10) < substr(d[j],1,10)) {
+					break
+				} else {
+					k++
+				}
+			}
+			if(i>1) {printf " "}
+			if(top-(m-1)*sp < snowthickness[d[k]] && top-(m-1)*sp > -icethickness[d[k]]) {
+				printf "%s", $i
+			} else {
+				printf "%s", -9999
+			}
+		}
+		printf "\n"
+	}
+}' <(cat <(egrep ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}* 2019T62_snow_depth_ice_thickness.tab) 2019T62_temp.tab) > 2019T62_temp_masked.tab
