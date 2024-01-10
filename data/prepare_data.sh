@@ -180,7 +180,7 @@ END {
 
 # Provide domain information
 echo "top=96" > 2019T62_temp.info
-echo "bottom=382" >> 2019T62_temp.info
+echo "bottom=-382" >> 2019T62_temp.info
 echo "spacing=2" >> 2019T62_temp.info
 
 
