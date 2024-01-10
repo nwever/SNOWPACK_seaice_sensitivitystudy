@@ -159,9 +159,9 @@ awk -v cutofftime=${lts} '
 		for (i=1; i<=NF; i++)  {
 			a[n,i] = $i
 		}
+		if (NF>p) {p = NF}
 	}
 }
-NF>p { p = NF }
 END {
 	for(j=1; j<=p; j++) {
 		if(!((1,j) in a)) {
@@ -178,10 +178,14 @@ END {
 	}
 }' <(unzip -p 2019T62.zip datasets/2019T62_temp.tab) > 2019T62_temp.tab
 
+# Provide domain information
+echo "top=96" > 2019T62_temp.info
+echo "bottom=382" >> 2019T62_temp.info
+echo "spacing=2" >> 2019T62_temp.info
+
+
 # Mask the temperature data with the manually determined interfaces. The depths for the sensors are 96 to -382 cm, referring to the initial interface between snow and ice.
-top=96
-bottom=382
-spacing=2
+source 2019T62_temp.info
 awk -v top=${top} -v bot=${bottom} -v sp=${spacing} '
 BEGIN {
 	n=1
