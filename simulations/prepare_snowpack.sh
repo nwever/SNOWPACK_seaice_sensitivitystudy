@@ -20,12 +20,17 @@ setup_model () {
 	echo "EXPERIMENT	=	${experiment}" >> ${inifile}
 	echo "" >> ${inifile}
 	echo "[SNOWPACK]" >> ${inifile}
-	echo "GEO_HEAT	=	${ohf}" >> ${inifile}
+	echo "GEO_HEAT		=	${ohf}" >> ${inifile}
+	echo "" >> ${inifile}
+	echo "[FILTERS]" >> ${inifile}
+	echo "PSUM::filter5	= MULT" >> ${inifile}
+	echo "PSUM::arg5::type	= CST" >> ${inifile}
+	echo "PSUM::arg5::cst	= ${fpsum}" >> ${inifile}
 
 	#
 	# Add SNOWPACK run command
 	#
-	echo "snowpack -b 2019-11-01T00:00 -c ${inifile} -e NOW > ./log/${experiment}.log 2>&1" >> to_exec.lst
+	echo "snowpack/bin/snowpack -b 2019-11-01T00:00 -c ${inifile} -e NOW > ./log/${experiment}.log 2>&1" >> to_exec.lst
 }
 
 
@@ -42,6 +47,7 @@ snow_thickness=20			# in cm
 layer_thickness=2.0			# in cm, 2 cm is the assumption in create_snofile.py
 ohf=10
 bulk_salinity=5
+fpsum=1.0				# Multiplication factor from precipitation, to mimick spatially variable accumulation on sea ice
 
 # Default experiment
 experiment=DFLT
@@ -83,3 +89,13 @@ do
 	setup_model
 done
 snow_thickness=${dflt_snow_thickness}
+
+# Test accumulation by manipulating PSUM
+dflt_fpsum=${fpsum}
+for val in $(seq 1 .04 1.4)
+do
+	fpsum=${val}
+	experiment=PSUM_${val}
+	setup_model
+done
+fpsum=${dflt_fpsum}
