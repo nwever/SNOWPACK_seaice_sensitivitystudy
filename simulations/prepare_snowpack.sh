@@ -92,7 +92,7 @@ snow_thickness=${dflt_snow_thickness}
 
 # Test accumulation by manipulating PSUM
 dflt_fpsum=${fpsum}
-for val in $(seq 1 .04 1.4)
+for val in $(seq 1 .1 2)
 do
 	fpsum=${val}
 	experiment=PSUM_${val}
