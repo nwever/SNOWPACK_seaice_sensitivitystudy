@@ -26,6 +26,9 @@ setup_model () {
 	echo "PSUM::filter5	= MULT" >> ${inifile}
 	echo "PSUM::arg5::type	= CST" >> ${inifile}
 	echo "PSUM::arg5::cst	= ${fpsum}" >> ${inifile}
+	echo "VW::filter5	= MULT" >> ${inifile}
+	echo "VW::arg5::type	= CST" >> ${inifile}
+	echo "VW::arg5::cst	= ${fvw}" >> ${inifile}
 
 	#
 	# Add SNOWPACK run command
@@ -47,7 +50,8 @@ snow_thickness=20			# in cm
 layer_thickness=2.0			# in cm, 2 cm is the assumption in create_snofile.py
 ohf=10
 bulk_salinity=5
-fpsum=1.0				# Multiplication factor from precipitation, to mimick spatially variable accumulation on sea ice
+fpsum=1.0				# Multiplication factor for precipitation, to mimick spatially variable accumulation on sea ice
+fvw=1.0					# Multiplication factor for windspeed
 
 # Default experiment
 experiment=DFLT
@@ -99,3 +103,13 @@ do
 	setup_model
 done
 fpsum=${dflt_fpsum}
+
+# Test effect of wind by manipulating VW
+dflt_fvw=${fvw}
+for val in $(seq 1 .1 2)
+do
+	fvw=${val}
+	experiment=VW_${val}
+	setup_model
+done
+fvw=${dflt_fvw}
