@@ -33,7 +33,7 @@ setup_model () {
 	#
 	# Add SNOWPACK run command
 	#
-	echo "snowpack/bin/snowpack -b 2019-11-01T00:00 -c ${inifile} -e NOW > ./log/${experiment}.log 2>&1" >> to_exec.lst
+	echo "snowpack/bin/snowpack -b 2019-11-01T00:00 -c ${inifile} -e NOW > ./log/${experiment}.log 2>&1; echo ${experiment} >> exit_\$?" >> to_exec.lst
 }
 
 
