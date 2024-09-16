@@ -56,6 +56,26 @@ def WriteHeader():
 	sys.stdout.write("[DATA]\n")
 
 
+def calcbrinesal(thermalmodel, Tc):
+	if (thermalmodel == "ASSUR1958"):
+		# See: Assur, A., Composition of sea ice and its tensile strength, in Arctic Sea Ice, N.  A.  S. N.  R.  C. Publ., 598, 106-138, 1958.
+		return Tc / (-0.054)
+	elif (thermalmodel == "VANCOPPENOLLE2019"):
+		# See Eq. 10 in: Vancoppenolle, M., Madec, G., Thomas, M., & McDougall, T. J. (2019). Thermodynamics of sea ice phase composition revisited. Journal of Geophysical Research: Oceans, 124, 615–634. doi: 10.1029/2018JC014611 
+		a1 = -0.00535
+		a2 = -0.519
+		a3 = -18.7
+		return a1*Tc*Tc*Tc + a2*Tc*Tc + a3*Tc
+	elif (thermalmodel == "VANCOPPENOLLE2019_M"):
+		# A quadratic fit to Eq. 10 in Vancoppenolle et al. (2019)
+		a1 = -0.16055612425953938
+		a2 = -13.296596377964793
+		return a1*Tc*Tc + a2*Tc
+	else:
+		sys.stderr.write(__file__ + ": Unknown thermal model specified.\n")
+		quit()
+
+
 def temperature(z, t_bot, t_top, h):
 	# Linear interpolation
 	return t_top + (t_bot - t_top) * (z / h)
@@ -74,6 +94,7 @@ parser.add_argument('-s2', nargs=1, default=nodata)
 parser.add_argument('-s3', nargs=1, default=nodata)
 parser.add_argument('-s4', nargs=1, default=nodata)
 parser.add_argument('-bulk_sal', nargs=1, default=nodata)
+parser.add_argument('-thermalmodel', nargs=1, default="ASSUR1958")	# Options are: ASSUR1958, VANCOPPENOLLE2019 or VANCOPPENOLLE2019_M
 parser.add_argument('--marksnowiceinterface', action="store_true", default=False)
 args = parser.parse_args()
 
@@ -105,6 +126,9 @@ if args.s4 is not None:
 if args.bulk_sal is not None:
 	bulk_sal = int(args.bulk_sal[0])
 
+if args.thermalmodel is not None:
+	thermalmodel = args.thermalmodel[0]
+
 if args.marksnowiceinterface is False:
 	mark = False
 else:
@@ -125,10 +149,10 @@ mass = 0
 n = 0
 for i in range(s4,s3,-1):
 	temp = temperature(i, t_bot, t_top, (s4 - s1))
-	brine_sal = ((temp - 273.15) / -0.054)
+	brine_sal = calcbrinesal(thermalmodel, temp)
 	theta_water = bulk_sal / brine_sal
-	if theta_water > 0.1:
-		theta_water = 0.1
+	#if theta_water > 0.1:
+	#	theta_water = 0.1
 	theta_air = theta_water * (1000. / 917.) - theta_water
 	theta_ice = 1. - theta_air - theta_water
 	mass = mass + 0.02 * (917. * theta_ice + (1000. + 0.824 * brine_sal) * theta_water)
@@ -149,7 +173,7 @@ for i in range(s4,s3,-1):
 	temp = temperature(i, t_bot, t_top, (s4 - s1))
 
 	#Calculate other variables given the bulk_sal
-	brine_sal = ((temp - 273.15) / -0.054)
+	brine_sal = calcbrinesal(thermalmodel, temp)
 	rho_2 = (1000. + 0.824 * brine_sal)
 	theta_water = bulk_sal / brine_sal
 
@@ -167,8 +191,8 @@ for i in range(s4,s3,-1):
 	#else:
 	#	h = h - 0.02 * 0.5 * (rho_2 + rho_1)
 
-	if theta_water > 0.1:
-		theta_water = 0.1
+	#if theta_water > 0.1:
+	#	theta_water = 0.1
 	theta_air = theta_water * (1000. / 917.) - theta_water
 	#if 1. - theta_air - theta_water > 0.99:
 	#	theta_air = 0.01 - theta_water
