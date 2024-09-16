@@ -70,7 +70,7 @@ cp -pi ../data/smet_combi/metcity.smet ./smet/
 
 # Test thermal model
 dflt_thermal_model=${thermal_model}
-for val in "ASSUR1958" "VANCOPPENOLLE2019_M"
+for val in "IGNORE" "ASSUR1958" "VANCOPPENOLLE2019" "VANCOPPENOLLE2019_M"
 do
 	thermal_model=${val}
 	experiment=${val}

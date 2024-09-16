@@ -57,7 +57,10 @@ def WriteHeader():
 
 
 def calcbrinesal(thermalmodel, Tc):
-	if (thermalmodel == "ASSUR1958"):
+	if (thermalmodel == "IGNORE"):
+		sys.stderr.write(__file__ + ": function calcbrinesal() should not be called for thermal model \"IGNORE\", as, in that case, brine salinity is fully independent from temperature.\n")
+		quit()
+	elif (thermalmodel == "ASSUR1958"):
 		# See: Assur, A., Composition of sea ice and its tensile strength, in Arctic Sea Ice, N.  A.  S. N.  R.  C. Publ., 598, 106-138, 1958.
 		return Tc / (-0.054)
 	elif (thermalmodel == "VANCOPPENOLLE2019"):
@@ -149,8 +152,12 @@ mass = 0
 n = 0
 for i in range(s4,s3,-1):
 	temp = temperature(i, t_bot, t_top, (s4 - s1))
-	brine_sal = calcbrinesal(thermalmodel, temp)
-	theta_water = bulk_sal / brine_sal
+	if (thermalmodel == "IGNORE"):
+		theta_water = 0.05	# Just assume a liquid water content
+		brine_sal = bulk_sal / theta_water
+	else:
+		brine_sal = calcbrinesal(thermalmodel, temp)
+		theta_water = bulk_sal / brine_sal
 	#if theta_water > 0.1:
 	#	theta_water = 0.1
 	theta_air = theta_water * (1000. / 917.) - theta_water
@@ -173,7 +180,11 @@ for i in range(s4,s3,-1):
 	temp = temperature(i, t_bot, t_top, (s4 - s1))
 
 	#Calculate other variables given the bulk_sal
-	brine_sal = calcbrinesal(thermalmodel, temp)
+	if (thermalmodel == "IGNORE"):
+		theta_water = 0.05	# Just assume a liquid water content
+		brine_sal = bulk_sal / theta_water
+	else:
+		brine_sal = calcbrinesal(thermalmodel, temp)
 	rho_2 = (1000. + 0.824 * brine_sal)
 	theta_water = bulk_sal / brine_sal
 
