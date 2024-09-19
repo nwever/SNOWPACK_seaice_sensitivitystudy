@@ -56,7 +56,8 @@ def WriteHeader():
 	sys.stdout.write("[DATA]\n")
 
 
-def calcbrinesal(thermalmodel, Tc):
+def calcbrinesal(thermalmodel, T):
+	Tc = T - 273.15
 	if (thermalmodel == "IGNORE"):
 		sys.stderr.write(__file__ + ": function calcbrinesal() should not be called for thermal model \"IGNORE\", as, in that case, brine salinity is fully independent from temperature.\n")
 		quit()
@@ -143,8 +144,8 @@ if (s4 == 0 and s3 == 0 and s2 == 0 and s1 == 0):
 	exit
 
 
-t_bot=-1.85
-t_top=-10
+t_bot=-1.85+273.15
+t_top=-10+273.15
 
 
 # Now calculate total weight:
