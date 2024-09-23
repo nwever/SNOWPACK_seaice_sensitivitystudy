@@ -27,21 +27,11 @@ BEGIN {
 			datum=sprintf("%04d-%02d-%02dT%02d:%02d:%02d", substr($2,7,4), substr($2,4,2), substr($2,1,2), substr($2,12,2), substr($2,15,2), substr($2,18,2));
 		} else if($1==501) {
 			if($2==1 && $3==0) {printf "%s -999 -999 -999 -999 -999 -999\n", datum;}
-			if($3 > 0) {
-				# This is necessary in case no soil is present
-				bottomsnowelement=1; z[1]=0; offset=1; nE=$2; nEsnow=nE;
-			} else {
-				# Case with soil layers
-				offset=0; nE=$2-1;
-			}
+			nE=$2
 			for(i=1;i<=$2;i++) {
 				# Read domain coordinates
-				z[i+offset]=$(i+2)/100.;
-				if(z[i+offset]==0) {
-					bottomsnowelement=i
-				}
+				z[i]=$(i+2)/100.
 			}
-			nEsnow=nE-bottomsnowelement+1;
 		} else if($1==502) {
 			# Read densities
 			for(i=1; i<=$2; i++) {
